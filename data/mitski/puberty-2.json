@@ -1,0 +1,27 @@
+{
+  "artist": {
+    "artist": "Mitski"
+  },
+  "album": {
+    "album": "Puberty 2"
+  },
+  "year_made": {
+    "year_made": 2016
+  },
+  "year_found": {
+    "year_found": 2018
+  },
+  "years_important": {
+    "years_important": [
+      2018,
+      2019,
+      2020
+    ]
+  },
+  "how_found": {
+    "how_found": " spotify"
+  },
+  "free_form": {
+    "free_form": "I started listening to this album right before a big breakup. It defined that era of my life for me and, since discovering it, mitski has become probably my favorite artist."
+  }
+}

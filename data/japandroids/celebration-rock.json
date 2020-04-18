@@ -1,0 +1,30 @@
+{
+  "artist": {
+    "artist": "Japandroids"
+  },
+  "album": {
+    "album": "Celebration Rock"
+  },
+  "year_made": {
+    "year_made": 2012
+  },
+  "year_found": {
+    "year_found": 2015
+  },
+  "years_important": {
+    "years_important": [
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020
+    ]
+  },
+  "how_found": {
+    "how_found": "unsnure"
+  },
+  "free_form": {
+    "free_form": "I remember putting \"Fire's Highway\" on the first good playlist that I made for myself .  I was newly sober and I remember listening to the playlist when I walked to my job interview at Deepfield.  I got the job!"
+  }
+}
