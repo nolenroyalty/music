@@ -8,7 +8,8 @@ def yes_or_no(prompt):
         if response == "y":
             return True
         elif response == "n":
-            return False 
+            return False
+
 
 def filenameable(s):
     return re.sub(r"[^A-Za-z0-9_-]+", "", s.replace(" ", "-")).lower()

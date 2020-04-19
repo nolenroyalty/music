@@ -4,9 +4,9 @@ from pathlib import Path
 from src.music_attribute import Artist, Album
 from src.music_entry import MusicEntry
 from src.util import yes_or_no
+from src.search_filter import Filter
 import src.filesystem as filesystem
 from src.music_db import MusicDB
-
 
 
 def add(args):
@@ -48,17 +48,18 @@ def set_add_args(sub):
 
 
 def search_albums(args):
-    full = args.full
-
     def print_entry(filename):
-        if full:
+        if args.json:
             print(entry.to_json())
         else:
             print(entry.to_string_simple())
 
-    entries = [MusicEntry.load(file_) for file_ in filesystem.list_files(artist=args.artist)]
-    db = MusicDB(entries).filter_year_made(exact=args.year, min_year=args.min_year, max_year=args.max_year)
+    filters = [Filter(f) for f in args.filter]
 
+    entries = [
+        MusicEntry.load(file_) for file_ in filesystem.list_files(artist=args.artist)
+    ]
+    db = MusicDB(entries, filters)
     for entry in db:
         print_entry(entry)
 
@@ -66,11 +67,16 @@ def search_albums(args):
 def set_search_args(sub):
     search_parser = sub.add_parser("search")
     search_parser.add_argument("--artist", "-a", help="Search for artist")
-    search_parser.add_argument("--full", "-f", action="store_true", help="Show full json")
-    search_parser.add_argument("--year", "-y",  type=int,  help="Show albums made in this year")
-    search_parser.add_argument("--min-year", type=int, help="Earliest year album was made (inclusive)")
-    search_parser.add_argument("--max-year", type=int, help="Latest year album was made (inclusive)")
-
+    search_parser.add_argument(
+        "--json", "-j", action="store_true", help="Show json instead of summary"
+    )
+    search_parser.add_argument(
+        "--filter",
+        "-f",
+        nargs="*",
+        default=[],
+        help="Search filter ($var([><=]|!=)$value)",
+    )
     search_parser.set_defaults(func=search_albums)
 
 

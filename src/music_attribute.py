@@ -60,6 +60,39 @@ class MusicAttribute:
     def filename(self):
         return filenameable(self.value)
 
+    @classmethod
+    def create_by_name(cls, name, value):
+        name = name.lower()
+        for subclass in cls.__subclasses__():
+            if name == subclass._machine_name or name == subclass._human_name.lower():
+                value = subclass._of_string(value)
+                return subclass(value)
+        raise Exception("Could not find an attribute with name {}".format(name))
+
+    @staticmethod
+    def normalize(x):
+        if isinstance(x, str):
+            return x.lower()
+        return x
+
+    def __eq__(self, other):
+        return self.normalize(self.value) == self.normalize(other.value)
+
+    def __ne__(self, other):
+        return self.normalize(self.value) != self.normalize(other.value)
+
+    def __lt__(self, other):
+        return self.normalize(self.value) < self.normalize(other.value)
+
+    def __gt__(self, other):
+        return self.normalize(self.value) > self.normalize(other.value)
+
+    def __le__(self, other):
+        return self.normalize(self.value) <= self.normalize(other.value)
+
+    def __ge__(self, other):
+        return self.normalize(self.value) >= self.normalize(other.value)
+
 
 class Artist(MusicAttribute):
     _machine_name = "artist"
