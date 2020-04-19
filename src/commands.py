@@ -67,6 +67,7 @@ def set_list_args(sub):
     list_parser.add_argument("--full", "-f", action="store_true", help="Show full json")
     list_parser.set_defaults(func=list_albums)
 
+
 def validate(args):
     filenames = filesystem.list_files(artist=args.artist)
     for filename in filenames:
@@ -74,6 +75,7 @@ def validate(args):
             MusicEntry.load(filename)
         except Exception as e:
             print("{} doesn't parse - {}".format(filename, e))
+
 
 def set_validate_args(sub):
     validate_parser = sub.add_parser("validate")
