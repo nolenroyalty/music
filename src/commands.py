@@ -5,6 +5,8 @@ from src.music_attribute import Artist, Album
 from src.music_entry import MusicEntry
 from src.util import yes_or_no
 import src.filesystem as filesystem
+from src.music_db import MusicDB
+
 
 
 def add(args):
@@ -45,31 +47,35 @@ def set_add_args(sub):
     add_parser.set_defaults(func=add)
 
 
-def list_albums(args):
+def search_albums(args):
     full = args.full
 
     def print_entry(filename):
-        entry = MusicEntry.load(filename)
         if full:
             print(entry.to_json())
         else:
             print(entry.to_string_simple())
 
-    filenames = filesystem.list_files(artist=args.artist)
+    entries = [MusicEntry.load(file_) for file_ in filesystem.list_files(artist=args.artist)]
+    db = MusicDB(entries).filter_year_made(exact=args.year, min_year=args.min_year, max_year=args.max_year)
 
-    for filename in filenames:
-        print_entry(filename)
+    for entry in db:
+        print_entry(entry)
 
 
-def set_list_args(sub):
-    list_parser = sub.add_parser("list")
-    list_parser.add_argument("--artist", "-a", help="Just list for artist")
-    list_parser.add_argument("--full", "-f", action="store_true", help="Show full json")
-    list_parser.set_defaults(func=list_albums)
+def set_search_args(sub):
+    search_parser = sub.add_parser("search")
+    search_parser.add_argument("--artist", "-a", help="Search for artist")
+    search_parser.add_argument("--full", "-f", action="store_true", help="Show full json")
+    search_parser.add_argument("--year", "-y",  type=int,  help="Show albums made in this year")
+    search_parser.add_argument("--min-year", type=int, help="Earliest year album was made (inclusive)")
+    search_parser.add_argument("--max-year", type=int, help="Latest year album was made (inclusive)")
+
+    search_parser.set_defaults(func=search_albums)
 
 
 def validate(args):
-    filenames = filesystem.list_files(artist=args.artist)
+    filenames = filesystem.search_files(artist=args.artist)
     for filename in filenames:
         try:
             MusicEntry.load(filename)
@@ -87,6 +93,6 @@ def get_parser():
     parser = argparse.ArgumentParser(prog="MUSIC.EXE")
     sub = parser.add_subparsers()
     set_add_args(sub)
-    set_list_args(sub)
+    set_search_args(sub)
     set_validate_args(sub)
     return parser

@@ -1,10 +1,11 @@
 import os
 import subprocess
 from pathlib import Path
+from functools import lru_cache
 import src.util as util
 
 
-@util.lazy
+@lru_cache(maxsize=1)
 def repo_root():
     path = (
         subprocess.Popen(
@@ -62,6 +63,7 @@ def _list_artist(artist):
         yield file_
 
 
+@lru_cache(maxsize=None)
 def list_files(artist=None):
     if artist is not None:
         return _list_artist(artist)
