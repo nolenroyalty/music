@@ -73,7 +73,7 @@ class MusicAttribute:
         name = name.lower()
         for subclass in cls.__subclasses__():
             if name == subclass._machine_name or name == subclass._human_name.lower():
-                return subclass(cls._of_string(value))
+                return subclass(subclass._of_string(value))
         raise Exception("Could not find an attribute with name {}".format(name))
 
     @staticmethod
@@ -130,6 +130,11 @@ class Genres(MusicAttribute):
     def _of_string(cls, s):
         genres = re.split(r"[,/]", s)
         return [s.strip().lower() for s in genres]
+
+    def __eq__(self, other):
+        ours = [self.normalize(v) for v in self.value]
+        other = [self.normalize(v) for v in other.value]
+        return any(genre in ours for genre in other)
 
 
 class YearMade(MusicAttribute):

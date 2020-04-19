@@ -31,7 +31,7 @@ class Operation:
 
 
 class Filter:
-    rex = r"^([a-zA-Z_]+){}([\w\s]+)$".format(Operation.op_rex)
+    rex = r"^([a-zA-Z_]+){}(.+)$".format(Operation.op_rex)
 
     def __init__(self, s):
         match = re.match(self.rex, s)
@@ -40,7 +40,7 @@ class Filter:
 
         attr = match.group(1)
         value = match.group(3)
-        self.attr = MusicAttribute.create_by_name(attr, value)
+        self.attr = MusicAttribute.create_of_string(attr, value)
         self.op = Operation(match.group(2))
 
     def matches(self, candidate):

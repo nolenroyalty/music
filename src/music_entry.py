@@ -27,6 +27,7 @@ def assert_is_attribute(arg):
     else:
         raise Exception("Expected {} to be a MusicAttribute".format(type(arg)))
 
+
 class MusicEntry:
     def __init__(self, *args, **kwargs):
         args = list(args) + list(kwargs.values())
