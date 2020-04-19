@@ -21,37 +21,18 @@ class MusicEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class MusicEntry:
-    _attributes = [
-        Artist,
-        Album,
-        Genres,
-        YearMade,
-        YearFound,
-        YearsImportant,
-        HowFound,
-        FreeForm,
-    ]
+def assert_is_attribute(arg):
+    if issubclass(arg.__class__, MusicAttribute):
+        return
+    else:
+        raise Exception("Expected {} to be a MusicAttribute".format(type(arg)))
 
-    def __init__(
-        self,
-        artist,
-        album,
-        genres,
-        year_made,
-        year_found,
-        years_important,
-        how_found,
-        free_form,
-    ):
-        self.artist = artist
-        self.album = album
-        self.genres = genres
-        self.year_made = year_made
-        self.year_found = year_found
-        self.years_important = years_important
-        self.how_found = how_found
-        self.free_form = free_form
+class MusicEntry:
+    def __init__(self, *args, **kwargs):
+        args = list(args) + list(kwargs.values())
+        for arg in args:
+            assert_is_attribute(arg)
+            setattr(self, arg._machine_name, arg)
 
     def to_json(self, indent=2):
         return json.dumps(self.__dict__, cls=MusicEncoder, indent=indent)
@@ -60,27 +41,12 @@ class MusicEntry:
         return str(self.__dict__)
 
     @classmethod
-    def create(
-        cls,
-        artist,
-        album,
-        genres,
-        year_made,
-        year_found,
-        years_important,
-        how_found,
-        free_form=None,
-    ):
-        return MusicEntry(
-            artist=Artist(artist),
-            album=Album(album),
-            genres=Genres(genres),
-            year_made=YearMade(year_made),
-            year_found=YearFound(year_found),
-            years_important=YearsImportant(years_important),
-            how_found=HowFound(how_found),
-            free_form=FreeForm(free_form),
-        )
+    def create(cls, **kwargs):
+        for (name, value) in kwargs.items():
+            attr = MusicAttribute.create_by_name(name, value)
+            kwargs[attr._machine_name] = attr
+
+        return MusicEntry(**kwargs)
 
     @classmethod
     def create_interactive(cls, pre_filled_attributes=None):
@@ -94,7 +60,7 @@ class MusicEntry:
             return None
 
         values = {}
-        for attribute in MusicEntry._attributes:
+        for attribute in MusicAttribute.__subclasses__():
             pre_filled = maybe_use_pre_filled_attribute(attribute)
             if pre_filled is None:
                 attribute = attribute.create_interactive()
@@ -131,7 +97,7 @@ class MusicEntry:
         return self.load(path)
 
     def path_in_repo(self):
-        filesystem.path_to_data_file(self.artist, self.album)
+        return filesystem.path_to_data_file(self.artist, self.album)
 
     def save(self):
         filesystem.ensure_artist_directory_exists(self.artist)
@@ -140,7 +106,7 @@ class MusicEntry:
             f.write(self.to_json())
 
     def edit(self):
-        for attribute in MusicEntry._attributes:
+        for attribute in MusicAttribute.__subclasses__():
             if yes_or_no("Would you like to edit {}? ".format(attribute._human_name)):
                 edited = getattr(self, attribute._machine_name).edit()
                 setattr(self, attribute._machine_name, edited)

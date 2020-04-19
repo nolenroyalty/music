@@ -65,8 +65,15 @@ class MusicAttribute:
         name = name.lower()
         for subclass in cls.__subclasses__():
             if name == subclass._machine_name or name == subclass._human_name.lower():
-                value = subclass._of_string(value)
                 return subclass(value)
+        raise Exception("Could not find an attribute with name {}".format(name))
+
+    @classmethod
+    def create_of_string(cls, name, value):
+        name = name.lower()
+        for subclass in cls.__subclasses__():
+            if name == subclass._machine_name or name == subclass._human_name.lower():
+                return subclass(cls._of_string(value))
         raise Exception("Could not find an attribute with name {}".format(name))
 
     @staticmethod
