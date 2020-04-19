@@ -3,6 +3,7 @@ from src.music_attribute import (
     MusicAttribute,
     Artist,
     Album,
+    Genres,
     YearMade,
     YearFound,
     YearsImportant,
@@ -12,16 +13,19 @@ from src.music_attribute import (
 from src.util import yes_or_no
 import src.filesystem as filesystem
 
+
 class MusicEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, MusicAttribute):
-            return {obj._machine_name: obj.value}
+            return obj.value
         return json.JSONEncoder.default(self, obj)
+
 
 class MusicEntry:
     _attributes = [
         Artist,
         Album,
+        Genres,
         YearMade,
         YearFound,
         YearsImportant,
@@ -33,6 +37,7 @@ class MusicEntry:
         self,
         artist,
         album,
+        genres,
         year_made,
         year_found,
         years_important,
@@ -41,6 +46,7 @@ class MusicEntry:
     ):
         self.artist = artist
         self.album = album
+        self.genres = genres
         self.year_made = year_made
         self.year_found = year_found
         self.years_important = years_important
@@ -58,6 +64,7 @@ class MusicEntry:
         cls,
         artist,
         album,
+        genres,
         year_made,
         year_found,
         years_important,
@@ -67,6 +74,7 @@ class MusicEntry:
         return MusicEntry(
             artist=Artist(artist),
             album=Album(album),
+            genres=Genres(genres),
             year_made=YearMade(year_made),
             year_found=YearFound(year_found),
             years_important=YearsImportant(years_important),
@@ -96,25 +104,40 @@ class MusicEntry:
 
         return MusicEntry(**values)
 
+    def validate(self):
+        # CR-soon nroyalty
+        pass
+
+    def to_string_simple(self):
+        return "{} - {} ({})".format(
+            self.artist.value, self.album.value, self.year_made.value
+        )
+
     @staticmethod
     def _of_json(json):
         return MusicEntry.create(**json)
 
-    # TODO: do we want this at all
     @staticmethod
     def load(file_):
         with open(file_) as f:
             data = json.load(f)
-            return MusicEntry._of_json(data)
+            entry = MusicEntry._of_json(data)
+            entry.validate()
+            return entry
 
     @staticmethod
-    def load_many(file_):
-        with open(file_) as f:
-            data = json.load(f)
-            return [MusicEntry._of_json(entry) for entry in data]
+    def load_album_and_artist(album, artist):
+        path = filesystem.path_to_data_file(artist, album)
+        return self.load(path)
 
     def path_in_repo(self):
         filesystem.path_to_data_file(self.artist, self.album)
+
+    def save(self):
+        filesystem.ensure_artist_directory_exists(self.artist)
+        path = self.path_in_repo()
+        with open(path, "w") as f:
+            f.write(self.to_json())
 
     def edit(self):
         for attribute in MusicEntry._attributes:

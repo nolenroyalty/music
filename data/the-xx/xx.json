@@ -1,27 +1,10 @@
 {
-  "artist": {
-    "artist": {
-      "artist": "The xx"
-    }
-  },
-  "album": {
-    "album": {
-      "album": "xx"
-    }
-  },
-  "year_made": {
-    "year_made": {
-      "year_made": 2009
-    }
-  },
-  "year_found": {
-    "year_found": {
-      "year_found": 2010
-    }
-  },
-  "years_important": {
-    "years_important": {
-      "years_important": [
+    "artist": "The xx",
+    "album": "xx",
+    "year_made": 2009,
+    "year_found": 2010,
+    "genres": ["indie-pop", "indie-rock"],
+    "years_important": [
         2010,
         2011,
         2012,
@@ -33,15 +16,7 @@
         2018,
         2019,
         2020
-      ]
-    }
-  },
-  "how_found": {
-    "how_found": "pitchfork"
-  },
-  "free_form": {
-    "free_form": {
-      "free_form": "I have a pretty strong memory of listening to this album while snorting 2cb in Tim and my room at Grinnell about a month before I dropped out (if that).  It was a great night and we spent a bunch of time talking about the album - I think it was me, Clint, Tim, Mustafa, maybe someone else.  Rregardless, I've listened to it ~constantly since then.  It is probably(?) my single favorite album, and the idea that, in 2009 when doing a 'best albums of the year' ranking p4k decided to give best album to MPP and give this THIRD, I said THIRd, makes me lose my goddamn mind.  Someone should be fired over this.  Great album, thanks."
-    }
-  }
+    ],
+    "how_found": "pitchfork",
+    "free_form": "I have a pretty strong memory of listening to this album while snorting 2cb in Tim and my room at Grinnell about a month before I dropped out (if that).  It was a great night and we spent a bunch of time talking about the album - I think it was me, Clint, Tim, Mustafa, maybe someone else.  Rregardless, I've listened to it ~constantly since then.  It is probably(?) my single favorite album, and the idea that, in 2009 when doing a 'best albums of the year' ranking p4k decided to give best album to MPP and give this THIRD, I said THIRd, makes me lose my goddamn mind.  Someone should be fired over this.  Great album, thanks."
 }

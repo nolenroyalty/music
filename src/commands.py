@@ -4,11 +4,8 @@ from pathlib import Path
 from src.music_attribute import Artist, Album
 from src.music_entry import MusicEntry
 from src.util import yes_or_no
-import src.filesystem
+import src.filesystem as filesystem
 
-def add_args():
-    parser = argparse.ArgumentParser(prog="ADD ENTRY")
-    return parser
 
 def add(args):
     artist = args.artist
@@ -16,7 +13,7 @@ def add(args):
 
     filename = filesystem.path_to_data_file(artist, album)
 
-    # CR-soon nroyalty: typo-spot here on artist 
+    # CR-soon nroyalty: typo-spot here on artist
     if filename.exists():
         entry = MusicEntry.load(filename)
         print("An entry for that album already exists:")
@@ -28,25 +25,66 @@ def add(args):
         entry.edit()
     else:
         pre_filled_attributes = [args.artist, args.album]
-        entry = MusicEntry.create_interactive(pre_filled_attributes=pre_filled_attributes)
+        entry = MusicEntry.create_interactive(
+            pre_filled_attributes=pre_filled_attributes
+        )
 
     print("Cool, here's your guy:")
     print(entry.to_json())
     if yes_or_no("Save that sucker?"):
-        filesystem.ensure_artist_directory_exists(artist)
-        with open(filename, 'w') as f:
-            f.write(entry.to_json())
+        entry.save()
     else:
         print("Cool, exiting.")
         sys.exit(0)
 
-def get_parser():
-    parser = argparse.ArgumentParser(prog="MUSIC.EXE")
-    sub = parser.add_subparsers()
-    # Add new music
+
+def set_add_args(sub):
     add_parser = sub.add_parser("add")
     add_parser.add_argument("artist", help="Artist to add", type=Artist)
     add_parser.add_argument("album", help="Album to add", type=Album)
     add_parser.set_defaults(func=add)
-    return parser
 
+
+def list_albums(args):
+    full = args.full
+
+    def print_entry(filename):
+        entry = MusicEntry.load(filename)
+        if full:
+            print(entry.to_json())
+        else:
+            print(entry.to_string_simple())
+
+    filenames = filesystem.list_files(artist=args.artist)
+
+    for filename in filenames:
+        print_entry(filename)
+
+
+def set_list_args(sub):
+    list_parser = sub.add_parser("list")
+    list_parser.add_argument("--artist", "-a", help="Just list for artist")
+    list_parser.add_argument("--full", "-f", action="store_true", help="Show full json")
+    list_parser.set_defaults(func=list_albums)
+
+def validate(args):
+    filenames = filesystem.list_files(artist=args.artist)
+    for filename in filenames:
+        try:
+            MusicEntry.load(filename)
+        except Exception as e:
+            print("{} doesn't parse - {}".format(filename, e))
+
+def set_validate_args(sub):
+    validate_parser = sub.add_parser("validate")
+    validate_parser.add_argument("--artist", "-a", help="Just validate for artist")
+    validate_parser.set_defaults(func=validate)
+
+
+def get_parser():
+    parser = argparse.ArgumentParser(prog="MUSIC.EXE")
+    sub = parser.add_subparsers()
+    set_add_args(sub)
+    set_list_args(sub)
+    set_validate_args(sub)
+    return parser

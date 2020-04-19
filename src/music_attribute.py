@@ -1,4 +1,5 @@
 import json
+import re
 from src.util import yes_or_no, filenameable
 
 
@@ -60,7 +61,6 @@ class MusicAttribute:
         return filenameable(self.value)
 
 
-
 class Artist(MusicAttribute):
     _machine_name = "artist"
     _human_name = "Artist"
@@ -79,6 +79,17 @@ class Album(MusicAttribute):
     @classmethod
     def _of_string(cls, s):
         return str(s)
+
+
+class Genres(MusicAttribute):
+    _machine_name = "genres"
+    _human_name = "Genres"
+    _prompt = "What genre(s) would you say this is?"
+
+    @classmethod
+    def _of_string(cls, s):
+        genres = re.split(r"[,/]", s)
+        return [s.strip().lower() for s in genres]
 
 
 class YearMade(MusicAttribute):
