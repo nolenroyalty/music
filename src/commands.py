@@ -75,7 +75,7 @@ def set_search_args(sub):
 
 
 def validate(args):
-    filenames = filesystem.search_files(artist=args.artist)
+    filenames = filesystem.list_files(artist=args.artist)
     for filename in filenames:
         try:
             MusicEntry.load(filename)
