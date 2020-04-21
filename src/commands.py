@@ -56,9 +56,7 @@ def search_albums(args):
 
     filters = [Filter(f) for f in args.filter]
 
-    entries = [
-        MusicEntry.load(file_) for file_ in filesystem.list_files(artist=args.artist)
-    ]
+    entries = [MusicEntry.load(file_) for file_ in filesystem.list_files()]
     db = MusicDB(entries, filters)
     for entry in db:
         print_entry(entry)
@@ -66,7 +64,6 @@ def search_albums(args):
 
 def set_search_args(sub):
     search_parser = sub.add_parser("search")
-    search_parser.add_argument("--artist", "-a", help="Search for artist")
     search_parser.add_argument(
         "--json", "-j", action="store_true", help="Show json instead of summary"
     )
